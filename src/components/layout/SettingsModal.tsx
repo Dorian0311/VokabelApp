@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Moon, Sun, Key, Target, RefreshCw, Check } from 'lucide-react';
+import { X, Moon, Sun, Target, RefreshCw } from 'lucide-react';
 import { useTransitionTimer } from '../../hooks/useTransitionTimer';
 import { useModal } from '../../hooks/useModal';
 import { useStore } from '../../hooks/useStore';
@@ -12,20 +12,10 @@ interface Props {
 }
 
 export default function SettingsModal({ isOpen, onClose }: Props) {
-  const saveTimer = useTransitionTimer();
   const demoTimer = useTransitionTimer();
   const dialogRef = useModal(isOpen, onClose);
   const { state, updateSettings, updateProgress, addDeck } = useStore();
-  const [apiKeyInput, setApiKeyInput] = useState(state.settings.geminiApiKey || '');
-  const [showKey, setShowKey] = useState(false);
-  const [savedKeySuccess, setSavedKeySuccess] = useState(false);
   const [resetSuccess, setResetSuccess] = useState(false);
-
-  const handleSaveApiKey = () => {
-    updateSettings({ geminiApiKey: apiKeyInput.trim() });
-    setSavedKeySuccess(true);
-    saveTimer(() => setSavedKeySuccess(false), 2000);
-  };
 
   const handleSetGoal = (goal: number) => {
     updateProgress({ ...state.progress, dailyGoal: goal });
@@ -92,53 +82,6 @@ export default function SettingsModal({ isOpen, onClose }: Props) {
                   </div>
                   <span className="text-xs text-indigo-500 font-semibold">Umschalten</span>
                 </button>
-              </div>
-
-              {/* Gemini API Key */}
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5 flex items-center justify-between">
-                  <span>Google Gemini API-Key</span>
-                  <span className="text-[10px] font-mono text-indigo-500 font-normal">
-                    {state.settings.geminiApiKey ? '✅ Key hinterlegt' : '⚠️ Kein Key'}
-                  </span>
-                </label>
-                <p className="text-xs dark:text-zinc-400 text-zinc-500 mb-2">
-                  Ermöglicht den intelligenten Foto-Scanner mit automatischer Texterkennung (OCR).
-                </p>
-                <div className="relative mb-2">
-                  <input
-                    aria-label="Persönlicher Gemini API-Key"
-                    type={showKey ? 'text' : 'password'}
-                    value={apiKeyInput}
-                    onChange={(e) => setApiKeyInput(e.target.value)}
-                    placeholder="AIzaSy..."
-                    className="w-full px-3.5 py-2.5 pr-20 text-xs font-mono rounded-xl dark:bg-zinc-800 bg-zinc-50 border dark:border-zinc-700 border-zinc-300 dark:text-zinc-100 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowKey(!showKey)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-zinc-400 hover:text-zinc-200 px-2 py-1"
-                  >
-                    {showKey ? 'Verstecken' : 'Zeigen'}
-                  </button>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <a
-                    href="https://aistudio.google.com/apikey"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-[11px] text-indigo-500 hover:underline flex items-center gap-1"
-                  >
-                    <Key size={12} /> Persönlichen Key verwalten
-                  </a>
-                  <button
-                    disabled={!apiKeyInput.trim() && !state.settings.geminiApiKey} onClick={handleSaveApiKey}
-                    className="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors"
-                  >
-                    {savedKeySuccess ? <Check size={14} /> : null}
-                    {savedKeySuccess ? 'Gespeichert!' : apiKeyInput.trim() ? 'Key speichern' : 'Key entfernen'}
-                  </button>
-                </div>
               </div>
 
               {/* Daily Goal */}

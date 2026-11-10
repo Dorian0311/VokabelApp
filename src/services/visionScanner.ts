@@ -34,11 +34,12 @@ function delay(ms: number, signal: AbortSignal): Promise<void> {
   });
 }
 
-export async function scanImageWithGemini(base64Data: string, apiKey: string, language = 'en', signal?: AbortSignal, onStatus?: (text: string) => void): Promise<ScanResult[]> {
-  if (!apiKey.trim()) throw new Error('Bitte deinen persönlichen Gemini API-Key hinterlegen.');
+export async function scanImageWithGemini(base64Data: string, language = 'en', signal?: AbortSignal, onStatus?: (text: string) => void): Promise<ScanResult[]> {
   if (typeof navigator !== 'undefined' && navigator.onLine === false) throw new Error('Du bist offline. Nutze den Text-Modus oder versuche es mit Internet erneut.');
   const cleanBase64 = base64Data.replace(/^data:image\/jpeg;base64,/, '');
   if (!/^[A-Za-z0-9+/]+={0,2}$/.test(cleanBase64)) throw new Error('Ungültige JPEG-Bilddaten.');
+  const apiKey = (import.meta.env?.VITE_GEMINI_API_KEY ?? '').trim();
+  if (!apiKey) throw new Error('Die Bilderkennung ist gerade nicht verfügbar. Bitte später erneut versuchen oder den Text-Modus nutzen.');
   const controller = new AbortController();
   const abort = () => controller.abort();
   signal?.addEventListener('abort', abort, { once: true });
@@ -62,8 +63,8 @@ export async function scanImageWithGemini(base64Data: string, apiKey: string, la
         } catch (error: unknown) {
           if (controller.signal.aborted) throw error;
           const status = error && typeof error === 'object' && 'status' in error ? error.status : undefined;
-          if (status === 401 || status === 403 || status === 400) throw new Error('API-Key ungültig oder Zugriff verweigert. Prüfe deinen persönlichen Gemini-Key.');
-          if (status === 429) throw new Error('Gemini-Kontingent erschöpft. Bitte später erneut versuchen oder dein Kontingent prüfen.');
+          if (status === 401 || status === 403 || status === 400) throw new Error('Die Bilderkennung ist gerade nicht verfügbar. Bitte später erneut versuchen oder den Text-Modus nutzen.');
+          if (status === 429) throw new Error('Die Bilderkennung ist derzeit ausgelastet. Bitte später erneut versuchen oder den Text-Modus nutzen.');
           if (status === 404) break;
           if (status === 503 && attempt === 0) { await delay(2000, controller.signal); continue; }
           if (error instanceof SyntaxError) throw new Error('Die Bilderkennung lieferte kein gültiges JSON. Bitte erneut versuchen.');

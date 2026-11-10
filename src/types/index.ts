@@ -34,7 +34,6 @@ export interface UserProgress {
 }
 
 export interface AppSettings {
-  geminiApiKey: string;
   darkMode: boolean;
 }
 

@@ -5,7 +5,7 @@ import { checkAnswer } from '../src/utils/levenshtein.ts';
 import { getToday, updateStreak } from '../src/utils/xp.ts';
 import { quizOptions } from '../src/utils/study.ts';
 import { initialDrop, dropReducer, matchReducer } from '../src/utils/gameState.ts';
-import { validateDecks, defaultProgress, importAllData, exportAllData, loadDecks, saveDecks, saveProgress, getStorageError, acceptValidatedImport } from '../src/utils/storage.ts';
+import { validateDecks, defaultProgress, importAllData, exportAllData, loadDecks, saveDecks, saveProgress, getStorageError, acceptValidatedImport, loadSettings, saveSettings } from '../src/utils/storage.ts';
 import { compressImage } from '../src/services/imageCompressor.ts';
 import { parseScanResults, scanImageWithGemini } from '../src/services/visionScanner.ts';
 
@@ -120,7 +120,16 @@ test('canvas errors reject rather than leaving compression pending, with URL cle
   } finally { globalThis.Image = originalImage; globalThis.document = originalDocument; mock.restoreAll(); }
 });
 
-test('missing key and malformed image fail before network access', async () => {
-  await assert.rejects(scanImageWithGemini('AAAA', ''), /API-Key/);
-  await assert.rejects(scanImageWithGemini('not base64!', 'test-only'), /Bilddaten/);
+test('unavailable recognition has a neutral error and malformed images fail before network access', async () => {
+  await assert.rejects(scanImageWithGemini('AAAA'), /Bilderkennung ist gerade nicht verfügbar/);
+  await assert.rejects(scanImageWithGemini('not base64!'), /Bilddaten/);
+});
+
+test('legacy scanner configuration is removed without affecting display preferences', () => {
+  let stored = JSON.stringify({ darkMode: false, geminiApiKey: 'obsolete-user-setting' });
+  globalThis.localStorage = { getItem: () => stored, setItem: (_key, value) => { stored = value; } };
+  const settings = loadSettings();
+  assert.deepEqual(settings, { darkMode: false });
+  assert.equal(saveSettings(settings), true);
+  assert.deepEqual(JSON.parse(stored), { darkMode: false });
 });

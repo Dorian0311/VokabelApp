@@ -102,20 +102,14 @@ export function loadDecks(): Deck[] { return read(KEYS.decks, validateDecks, [])
 export function saveDecks(decks: Deck[]): boolean { return write(KEYS.decks, decks); }
 export function loadProgress(): UserProgress { return read(KEYS.progress, validateProgress, defaultProgress()); }
 export function saveProgress(progress: UserProgress): boolean { return write(KEYS.progress, progress); }
-function isLegacySharedKey(value: string): boolean {
-  let hash = 14695981039346656037n;
-  for (const character of value) hash = BigInt.asUintN(64, (hash ^ BigInt(character.charCodeAt(0))) * 1099511628211n);
-  return hash.toString(16) === 'e26fc0ccc95980b';
-}
 export function loadSettings(): AppSettings {
   return read(KEYS.settings, value => {
     const settings = object(value);
     if (typeof settings.darkMode !== 'boolean') throw new Error('Ungültige Darstellung.');
-    const key = string(settings.geminiApiKey, 1024);
-    return { geminiApiKey: isLegacySharedKey(key) ? '' : key, darkMode: settings.darkMode };
-  }, { geminiApiKey: '', darkMode: true });
+    return { darkMode: settings.darkMode };
+  }, { darkMode: true });
 }
-export function saveSettings(settings: AppSettings): boolean { return write(KEYS.settings, settings); }
+export function saveSettings(settings: AppSettings): boolean { return write(KEYS.settings, { darkMode: settings.darkMode }); }
 export function isFirstLaunch(): boolean {
   try { return !blocked.has(KEYS.decks) && localStorage.getItem(KEYS.decks) === null && !localStorage.getItem(KEYS.initialized); }
   catch { report('Lokaler Speicher ist nicht verfügbar. Änderungen können nur per Backup gesichert werden.'); return false; }

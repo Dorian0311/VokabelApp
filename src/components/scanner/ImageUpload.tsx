@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Camera, Loader2 } from 'lucide-react';
-import { useStore } from '../../hooks/useStore';
 import { compressImage } from '../../services/imageCompressor';
 import { scanImageWithGemini } from '../../services/visionScanner';
 import type { ScanResult } from '../../types';
@@ -15,7 +14,6 @@ interface Props {
 }
 
 export default function ImageUpload({ onScanComplete, isScanning, onScanStart, onScanEnd, language }: Props) {
-  const { state } = useStore();
   const fileRef = useRef<HTMLInputElement>(null);
   const request = useRef<AbortController | null>(null);
   const onEnd = useRef(onScanEnd);
@@ -33,7 +31,6 @@ export default function ImageUpload({ onScanComplete, isScanning, onScanStart, o
       return;
     }
     if (file.size > 10 * 1024 * 1024) { setError('Das Bild darf maximal 10 MB groß sein.'); return; }
-    if (!state.settings.geminiApiKey.trim()) { setError('Kein Gemini API-Key hinterlegt. Bitte unten eintragen.'); return; }
     if (!navigator.onLine) { setError('Du bist offline. Nutze den Text-Modus.'); return; }
     const controller = new AbortController();
     request.current = controller;
@@ -46,7 +43,7 @@ export default function ImageUpload({ onScanComplete, isScanning, onScanStart, o
       controller.signal.throwIfAborted();
       setPreview(compressed);
 
-      const results = await scanImageWithGemini(compressed, state.settings.geminiApiKey, language, controller.signal, setStatus);
+      const results = await scanImageWithGemini(compressed, language, controller.signal, setStatus);
       controller.signal.throwIfAborted();
       if (results.length === 0) {
         setError('Keine Vokabeln erkannt. Versuche ein schärferes Foto oder den Text-Modus.');
