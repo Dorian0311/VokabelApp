@@ -1,0 +1,158 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-zinc-950: #09090b;
+  --color-zinc-900: #18181b;
+  --color-zinc-800: #27272a;
+  --color-zinc-700: #3f3f46;
+  --color-zinc-600: #52525b;
+  --color-zinc-500: #71717a;
+  --color-zinc-400: #a1a1aa;
+  --color-zinc-300: #d4d4d8;
+  --color-zinc-200: #e4e4e7;
+  --color-zinc-100: #f4f4f5;
+  --color-zinc-50: #fafafa;
+
+  --color-indigo-600: #4f46e5;
+  --color-indigo-500: #6366f1;
+  --color-indigo-400: #818cf8;
+  --color-indigo-950: #1e1b4b;
+
+  --color-emerald-600: #059669;
+  --color-emerald-500: #10b981;
+  --color-emerald-400: #34d399;
+  --color-emerald-950: #022c22;
+
+  --color-amber-600: #d97706;
+  --color-amber-500: #f59e0b;
+  --color-amber-400: #fbbf24;
+  --color-amber-950: #451a03;
+
+  --color-rose-600: #e11d48;
+  --color-rose-500: #f43f5e;
+  --color-rose-400: #fb7185;
+  --color-rose-950: #4c0519;
+
+  --color-blue-500: #3b82f6;
+  --color-blue-400: #60a5fa;
+}
+
+/* Base styles */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.dark body,
+.dark {
+  background-color: #09090b;
+  color: #f4f4f5;
+}
+
+body {
+  background-color: #fafafa;
+  color: #18181b;
+}
+
+/* Safe area */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Scrollbar styling for dark mode */
+.dark ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #18181b;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 3px;
+}
+
+/* Card flip */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Word Drop animation */
+@keyframes fall {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(calc(100vh - 200px));
+  }
+}
+
+/* Shake animation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* Pulse for streak */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Prevent zoom on input focus (iOS) */
+input, textarea, select {
+  font-size: 16px;
+}
+
+/* Disable text selection in game areas */
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
+/* Accessible touch targets and narrow-screen content. */
+button { min-height: 44px; min-width: 44px; }
+button, input, select, textarea { touch-action: manipulation; }
+button:focus-visible, a:focus-visible { outline: 2px solid #6366f1; outline-offset: 3px; }
+input, textarea { scroll-margin-block: 1rem 5rem; }
+main { overflow-wrap: anywhere; }
+.keyboard-open nav[data-bottom-nav] { display: none; }
+@keyframes word-drop { from { transform: translateY(-100px); } to { transform: translateY(100px); } }
+.word-drop-token { animation: word-drop 4.5s linear forwards; }
+@media (prefers-reduced-motion: reduce) {
+  .word-drop-token { animation-name: none; }
+  .animate-pulse-glow, .animate-shake { animation: none; }
+}
+
+.modal-overlay { height: var(--app-height, 100dvh); top: var(--app-offset-top, 0px); bottom: auto; }

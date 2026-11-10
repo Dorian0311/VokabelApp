@@ -1,0 +1,39 @@
+{
+  "name": "vokabelapp",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "dev": "vite --configLoader native",
+    "build": "tsc -b && vite build --configLoader native",
+    "lint": "oxlint",
+    "test": "node --test --test-isolation=none tests/regressions.test.mjs",
+    "preview": "vite preview --configLoader native"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/cli": "^8.6.0",
+    "@capacitor/core": "^8.6.0",
+    "@google/genai": "^3.0.0",
+    "canvas-confetti": "^1.9.4",
+    "framer-motion": "^14.11.1",
+    "lucide-react": "^1.70.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "ts-fsrs": "^6.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "oxlint": "^1.90.0",
+    "tailwindcss": "^4.3.5",
+    "typescript": "~7.0.2",
+    "vite": "^8.3.6",
+    "vite-plugin-pwa": "^2.0.0"
+  }
+}
